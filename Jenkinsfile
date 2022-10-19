@@ -22,14 +22,19 @@ pipeline {
                 checkout scm
             }
         }
-        stage("Docker Build") {
-            steps {
-                // This uploads your application's source code and performs a binary build in OpenShift
-                // This is a step defined in the shared library (see the top for the URL)
-                // (Or you could invoke this step using 'oc' commands!)
-                binaryBuild(buildConfigName: appName, buildFromPath: ".")
-            }
-        }
+   stage('Build') {
+        sh "mvn -v"
+        sh "mvn clean package -f hello-world/pom.xml"
+         
+        def jarFile = sh(returnStdout: true, script: 'find hello-world/target -maxdepth 1 -regextype posix-extended -regex ".+\\.(jar|war)\$" | head -n 1').trim()
+        sh "cp ${jarFile} app.jar"
+    }
+    stage('Deploy') {
+        sh "oc new-build --name hello-world --binary -n my-project --image-stream=my-project/openjdk-11-rhel7  || true"
+        sh "oc start-build hello-world --from-file=app.jar -n my-project --follow --wait"
+        sh "oc new-app hello-world || true"
+        sh "oc expose svc/hello-world || true"
+    }
 
         // You could extend the pipeline by tagging the image,
         // or deploying it to a production environment, etc......
