@@ -13,6 +13,16 @@ retriever: modernSCM(
 // Each resource related to your app will be given this name
 appName = "hello-java"
 
+openshift.withCluster() {
+  env.NAMESPACE = openshift.project()
+  env.POM_FILE = env.BUILD_CONTEXT_DIR ? "${env.BUILD_CONTEXT_DIR}/pom.xml" : "pom.xml"
+  echo "Starting Pipeline for ${env.APP_NAME}..."
+  env.BUILD = "${env.NAMESPACE_BUILD}"
+  env.DEV = "${env.NAMESPACE_DEV}"
+  env.STAGE = "${env.NAMESPACE_STAGE}"
+  env.PROD = "${env.NAMESPACE_PROD}"
+}
+
 pipeline {
     // Use the 'maven' Jenkins agent image which is provided with OpenShift 
     agent { label "maven" }
@@ -26,7 +36,7 @@ pipeline {
     // Run Maven build, skipping tests
     stage('Build'){
       steps {
-        sh "mvn -B clean install -DskipTests=true -f ${POM_FILE}"
+        sh "mvn -B clean install -DskipTests=true -f pom.xml
       }
     }
 
