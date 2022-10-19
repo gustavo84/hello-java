@@ -16,6 +16,7 @@ items:
       # Expect a local directory to be streamed to OpenShift as a build source
       type: Binary
       binary: {}
+      git: https://github.com/gustavo84/hello-java
     strategy:
       type: Docker
       dockerStrategy:
