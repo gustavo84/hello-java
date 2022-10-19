@@ -11,7 +11,7 @@ items:
     output:
       to:
         kind: DockerImage
-        name: docker.io/monodot/hello-java:latest
+        name: docker.io/gustavo84/hello-java:latest
     source:
       # Expect a local directory to be streamed to OpenShift as a build source
       type: Binary
